@@ -18,27 +18,23 @@ class Video:
     def Download_cut(self, url: str, user_want_time: int, moments: list):
         user_want_time = user_want_time * 1000
         for idx, moment in enumerate(moments):
-            cmd = "ffmpeg -ss {} -i $(yt-dlp -f best -g '{}') -t {} -c copy ./home/DOWNLOAD.mp4"
-            start_time = moment - (user_want_time/2 + 5000)
+            cmd = "ffmpeg -ss {} -i $(yt-dlp -f best -g '{}') -t {} -c copy DOWNLOAD.mp4"
+            start_time = int(moment) - (int(user_want_time)/2 + 5000)
             if start_time < 0:
                 start_time = 0
-            total_time = moment + (user_want_time/2 + 5000)
+            total_time = int(moment) + (int(user_want_time)/2 + 5000)
             start_time = self.convert_ms_to_hms(start_time)
             total_time = self.convert_ms_to_hms(total_time)
 
             cmd = cmd.format(start_time, url, total_time)
-            try:
-                res = subprocess.run([cmd], shell=True, check=True)
-                print(res)
-            except Exception as e:
-                print(e)
-
-            user_want_time = self.convert_ms_to_hms(user_want_time + 5000)
-
-            cmd = "ffmpeg -i ./home/DOWNLOAD.mp4 -ss 00:00:05 -to {} ./home/output.mp4".format(user_want_time)
             os.system(cmd)
 
-            os.remove("./home/DOWNLOAD.mp4")
+            tmp_time = self.convert_ms_to_hms(user_want_time + 5000)
+
+            cmd = "ffmpeg -i DOWNLOAD.mp4 -ss 00:00:05 -to {} {}.mp4".format(tmp_time, moment)
+            os.system(cmd)
+            
+            os.remove("DOWNLOAD.mp4")
 
         return {'success' : True}
 
