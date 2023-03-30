@@ -67,9 +67,13 @@ class Scrap:
             'videoPrimaryInfoRenderer']['dateText']['simpleText']
 
     def get_yt_tags(self, data):
-        tags_data = json.loads(data)['contents']['twoColumnWatchNextResults']['results']['results']['contents'][0][
-            'videoPrimaryInfoRenderer']['superTitleLink']['runs']
-        return list(filter(lambda x: x != ' ', map(lambda x: x['text'], tags_data)))
+        try:
+            tags_data = json.loads(data)['contents']['twoColumnWatchNextResults']['results']['results']['contents'][0][
+                'videoPrimaryInfoRenderer']['superTitleLink']['runs']
+            return list(filter(lambda x: x != ' ', map(lambda x: x['text'], tags_data)))
+        except KeyError:
+            return []
+
 
     def get_all(self):
         scrap_info = {
@@ -78,7 +82,7 @@ class Scrap:
             'mr_info': self.mr_info,
             'title': self.title,
             'owner': self.owner,
-            'get_yt_upload_date': self.upload_date,
+            'upload_date': self.upload_date,
             'tags': self.tags
                 }
         return scrap_info
