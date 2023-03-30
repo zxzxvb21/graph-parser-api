@@ -26,6 +26,7 @@ class Scrap:
         self.owner = self.get_yt_owner(data)
         self.upload_date = self.get_yt_upload_date(data)
         self.tags = self.get_yt_tags(data)
+        self.view_count = self.get_yt_view_count(data)
 
     def get_yt_mr(self, data, count):
         markers_map = json.loads(data)['playerOverlays']['playerOverlayRenderer']['decoratedPlayerBarRenderer'][
@@ -74,6 +75,9 @@ class Scrap:
         except KeyError:
             return []
 
+    def get_yt_view_count(self, data):
+        return json.loads(data)['contents']['twoColumnWatchNextResults']['results']['results']['contents'][0][
+            'videoPrimaryInfoRenderer']['viewCount']['videoViewCountRenderer']['viewCount']['simpleText']
 
     def get_all(self):
         scrap_info = {
@@ -83,6 +87,7 @@ class Scrap:
             'title': self.title,
             'owner': self.owner,
             'upload_date': self.upload_date,
-            'tags': self.tags
-                }
+            'tags': self.tags,
+            'view_count': self.view_count,
+        }
         return scrap_info
