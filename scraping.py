@@ -1,3 +1,5 @@
+import pdb
+
 import traceback
 import requests
 import json
@@ -37,13 +39,12 @@ class Scrap:
         for d in markers_map:
             if d['key'] == 'HEATSEEKER':
                 heat_seeker = d
-
         heatmap_array = \
             heat_seeker['value']['heatmap']['heatmapRenderer']['heatMarkers']
         heatmap_sorted_array = sorted(heatmap_array,
                                       key=(lambda x: x['heatMarkerRenderer']['heatMarkerIntensityScoreNormalized']),
                                       reverse=True)
-
+        
         result = list(filter(lambda x: x != 0, map(lambda x: x['heatMarkerRenderer']['timeRangeStartMillis'], heatmap_sorted_array)))[0:count]
         return result
 
