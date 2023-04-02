@@ -2,5 +2,3 @@ fastapi
 beautifulsoup4
 uvicorn
 requests
-Jinja2
-python-multipart
