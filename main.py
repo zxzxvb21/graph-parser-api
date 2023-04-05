@@ -13,22 +13,37 @@ app = FastAPI()
 
 @app.post("/scraping/")
 def execScraping(url: str, count: int, time: int):
-
     if url is None:
         raise HTTPException(status_code = 400, detail = "URL Link is None")
     try:
         scrap = Scrap(url, count)
         scrap_info = scrap.get_all()
+        mr_list = scrap_info['mr_info']
+        for mr in mr_list:
+            start_time = int(moment) - int(time)/2
+            if start_time < 0:
+                start_time = 0
+            end_time = int(moment) + int(time)/2
+#            if end_time <
+
     except Exception:
         raise HTTPException(status_code = 404, detail = "Parse Info is None")
+    
+    return scrap_info
 
-    video = Video(url, time, scrap_info['mr_info'])
-    result = video.Download_cut(url, time, scrap_info['mr_info'])
+#@app.post("/yt_download/")
+#def execDownload(url: str, time: int, mr_info: int):
+#    video = Video(url, time, start_time, end_time)
+#    return 
 
-    if 'msg' in result:
-        return {'success' : False, 'result' : result}
 
-    return {'success' : True, 'result' : result }
+    #video = Video(url, time, scrap_info['mr_info'])
+    #result = video.Download_cut(url, time, scrap_info['mr_info'])
+
+    #if 'msg' in result:
+    #    return {'success' : False, 'result' : result}
+
+    #return {'success' : True, 'result' : result }
 
 #@app.get("/download/")
 #def execDownloadFile(video_id: str):

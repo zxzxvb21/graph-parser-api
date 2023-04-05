@@ -23,7 +23,7 @@ class Scrap:
             error_msg = traceback.format_exc()
             raise UnicornException(error_msg)
 
-        self.mr_info = self.get_yt_mr(data, count)
+        self.mr_info, self.replayed_ratio, self.video_length = self.get_yt_mr(data, count)
         self.title = self.get_yt_title(data)
         self.owner = self.get_yt_owner(data)
         self.upload_date = self.get_yt_upload_date(data)
@@ -39,14 +39,16 @@ class Scrap:
         for d in markers_map:
             if d['key'] == 'HEATSEEKER':
                 heat_seeker = d
-        heatmap_array = \
-            heat_seeker['value']['heatmap']['heatmapRenderer']['heatMarkers']
+        heatmap_array = heat_seeker['value']['heatmap']['heatmapRenderer']['heatMarkers']
         heatmap_sorted_array = sorted(heatmap_array,
                                       key=(lambda x: x['heatMarkerRenderer']['heatMarkerIntensityScoreNormalized']),
                                       reverse=True)
-        
-        result = list(filter(lambda x: x != 0, map(lambda x: x['heatMarkerRenderer']['timeRangeStartMillis'], heatmap_sorted_array)))[0:count]
-        return result
+        result = list(filter(lambda x: x['timeRangeStartMillis'] != 0, map(lambda x: x['heatMarkerRenderer'], heatmap_sorted_array)))[0:count]
+        mr_list = [mr['timeRangeStartMillis'] for mr in result]
+        ratio = [mr['heatMarkerIntensityScoreNormalized'] * 100 for mr in result]
+        pdb.set_trace()
+        video_length = heatmap_array[-1]['heatMarkerRenderer']['markerDurationMillis'] * 100
+        return result, ratio, video_length
 
     def get_yt_title(self, data):
         return json.loads(data)['contents']['twoColumnWatchNextResults']['results']['results']['contents'][0][
@@ -79,16 +81,22 @@ class Scrap:
     def get_yt_view_count(self, data):
         return json.loads(data)['contents']['twoColumnWatchNextResults']['results']['results']['contents'][0][
             'videoPrimaryInfoRenderer']['viewCount']['videoViewCountRenderer']['viewCount']['simpleText']
+    
+    def get_yt_replayed_ratio(self, data):
+        return json.loads(data)
+
 
     def get_all(self):
         scrap_info = {
             'result': True,
             'url': self.url,
             'mr_info': self.mr_info,
+            'replayed_ratio': self.replayed_ratio,
             'title': self.title,
             'owner': self.owner,
             'upload_date': self.upload_date,
             'tags': self.tags,
             'view_count': self.view_count,
+            'video_length': self.video_length
         }
         return scrap_info
