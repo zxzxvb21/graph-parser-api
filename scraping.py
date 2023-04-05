@@ -10,9 +10,10 @@ from exception import UnicornException
 
 class Scrap:
 
-    def __init__(self, url, count):
+    def __init__(self, url, count, time):
         self.url = url
         self.count = count
+        self.time = time
         try:
             soup = BeautifulSoup(requests.get(url).text, "html.parser")
             data = re.search(r"var ytInitialData = ({.*?});", soup.prettify()).group(1)
@@ -45,10 +46,9 @@ class Scrap:
                                       reverse=True)
         result = list(filter(lambda x: x['timeRangeStartMillis'] != 0, map(lambda x: x['heatMarkerRenderer'], heatmap_sorted_array)))[0:count]
         mr_list = [mr['timeRangeStartMillis'] for mr in result]
-        ratio = [mr['heatMarkerIntensityScoreNormalized'] * 100 for mr in result]
-        pdb.set_trace()
+        ratio = [round(mr['heatMarkerIntensityScoreNormalized'] * 100, 2) for mr in result]
         video_length = heatmap_array[-1]['heatMarkerRenderer']['markerDurationMillis'] * 100
-        return result, ratio, video_length
+        return mr_list, ratio, video_length
 
     def get_yt_title(self, data):
         return json.loads(data)['contents']['twoColumnWatchNextResults']['results']['results']['contents'][0][
@@ -82,16 +82,28 @@ class Scrap:
         return json.loads(data)['contents']['twoColumnWatchNextResults']['results']['results']['contents'][0][
             'videoPrimaryInfoRenderer']['viewCount']['videoViewCountRenderer']['viewCount']['simpleText']
     
-    def get_yt_replayed_ratio(self, data):
-        return json.loads(data)
-
+    def reform_mr_info(self, mr_info, time, ratio):
+        mr_list = []
+        time = time * 1000
+        for mr, rat in zip(mr_info, ratio):
+            start_time = int(mr) - int(time)/2
+            end_time = int(mr) + int(time)/2
+            if start_time < 0:
+                start_time = 0
+                end_time = time
+                mr_list.append({'start_time' : start_time, 'end_time' : end_time, 'ratio' : rat})
+            elif end_time > self.video_length:
+                end_time = self.video_length
+                mr_list.append({'start_time' : start_time, 'end_time' : end_time, 'ratio' : rat})
+            else:
+                mr_list.append({'start_time' : start_time, 'end_time' : end_time, 'ratio' : rat})
+        return mr_list
 
     def get_all(self):
         scrap_info = {
             'result': True,
             'url': self.url,
-            'mr_info': self.mr_info,
-            'replayed_ratio': self.replayed_ratio,
+            'mr_info': self.reform_mr_info(self.mr_info, self.time, self.replayed_ratio),
             'title': self.title,
             'owner': self.owner,
             'upload_date': self.upload_date,

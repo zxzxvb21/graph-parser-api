@@ -16,9 +16,11 @@ class Video:
         hours = int((ms / (1000 * 60 * 60)) % 24)
         return "{:02d}:{:02d}:{:02d}".format(hours, minutes, seconds)
 
-    def Download_cut(self, url: str, user_want_time: int, moments: list):
+    def Download_cut(self, url: str, user_want_time: int, start_time : int, end_time : int):
         user_want_time = user_want_time * 1000
         file_name_list = []
+        
+        # FIXME not list -> only one
         for idx, moment in enumerate(moments):
             if os.path.isfile(self.video_id):
                 os.remove(self.video_id+'.mp4')
