@@ -30,6 +30,7 @@ class Scrap:
         self.upload_date = self.get_yt_upload_date(data)
         self.tags = self.get_yt_tags(data)
         self.view_count = self.get_yt_view_count(data)
+        self.video_id = self.get_video_id(data)
 
     def get_yt_mr(self, data, count):
         markers_map = json.loads(data)['playerOverlays']['playerOverlayRenderer']['decoratedPlayerBarRenderer'][
@@ -99,6 +100,9 @@ class Scrap:
                 mr_list.append({'start_time' : start_time, 'end_time' : end_time, 'ratio' : rat})
         return mr_list
 
+    def get_video_id(self, data):
+        return json.loads(data)['currentVideoEndpoint']['watchEndpoint']['videoId']
+
     def get_all(self):
         scrap_info = {
             'result': True,
@@ -109,6 +113,7 @@ class Scrap:
             'upload_date': self.upload_date,
             'tags': self.tags,
             'view_count': self.view_count,
-            'video_length': self.video_length
+            'video_length': self.video_length,
+            'video_id': self.video_id,
         }
         return scrap_info
