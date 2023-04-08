@@ -17,21 +17,21 @@ class Video:
         hours = int((ms / (1000 * 60 * 60)) % 24)
         return "{:02d}:{:02d}:{:02d}".format(hours, minutes, seconds)
 
-    def Download_cut(self, url: str, user_want_time: int, start_time : int, end_time : int):
+    def getShortByTime(self, url: str, user_want_time: int, start_time : int, end_time : int):
         user_want_time = user_want_time * 1000
         file_name_list = []
-        if os.path.isfile(self.video_id):
-            os.remove(self.video_id+'.mp4')
-        cmd = "ffmpeg -ss {} -i $(yt-dlp -f best -g '{}') -t {} -c copy {}.mp4"
+        if not os.path.isfile(self.video_id):
+            # os.remove(self.video_id+'.mp4')
+            cmd = "ffmpeg -ss {} -i $(yt-dlp -f best -g '{}') -t {} -c copy {}.mp4"
 
-        start_time = self.convert_ms_to_hms(int(start_time) - 5000)
-        end_time = self.convert_ms_to_hms(int(end_time) + 5000)
+            start_time = self.convert_ms_to_hms(int(start_time) - 5000)
+            end_time = self.convert_ms_to_hms(int(end_time) + 5000)
 
-        cmd = cmd.format(start_time, url, total_time, self.video_id)
+            cmd = cmd.format(start_time, url, total_time, self.video_id)
 
-        result = os.system(cmd)
-        if result != 0:
-            return {'msg' : 'Download Fail'}
+            result = os.system(cmd)
+            if result != 0:
+                return {'msg': 'Download Fail'}
 
         tmp_time = self.convert_ms_to_hms(user_want_time + 5000)
         file_name = self.video_id+ '_' + str(start_time)
@@ -40,7 +40,7 @@ class Video:
             return {'msg' : 'Cut Fail'}
         file_name = self.video_id+ '_' + str(start_time)
         
-        os.remove("{}.mp4".format(self.video_id))
+        # os.remove("{}.mp4".format(self.video_id))
         return file_name
 
         # FIXME not list -> only one

@@ -20,13 +20,14 @@ def execScraping(url: str, count: int, time: int):
         scrap_info = scrap.get_all()
     except Exception:
         raise HTTPException(status_code = 404, detail = "Parse Info is None")
-    return scrap_info
+
+    return {'success': True, 'result': scrap_info}
 
 @app.post("/yt_download/")
 def execDownload(url: str, time: int, mr_info: int):
-    video = Video(url, time, start_time, end_time)
+    video = Video(url, time, mr_info)
     # download video to server
-    result = video.Download_cut(url, time, start_time, end_time)
+    result = video.Download_cut(url, time, mr_info)
     # upload video to user
 
     return result

@@ -105,7 +105,6 @@ class Scrap:
 
     def get_all(self):
         scrap_info = {
-            'result': True,
             'url': self.url,
             'mr_info': self.reform_mr_info(self.mr_info, self.time, self.replayed_ratio),
             'title': self.title,
