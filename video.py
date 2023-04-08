@@ -17,7 +17,7 @@ class Video:
         hours = int((ms / (1000 * 60 * 60)) % 24)
         return "{:02d}:{:02d}:{:02d}".format(hours, minutes, seconds)
 
-    def getShortByTime(self, url: str, user_want_time: int, start_time : int, end_time : int):
+    def getShortByTime(self, url: str, user_want_time: int, start_time: int, end_time: int):
         user_want_time = user_want_time * 1000
         file_name_list = []
         if not os.path.isfile(self.video_id):
@@ -34,12 +34,12 @@ class Video:
                 return {'msg': 'Download Fail'}
 
         tmp_time = self.convert_ms_to_hms(user_want_time + 5000)
-        file_name = self.video_id+ '_' + str(start_time)
+        file_name = self.video_id + '_' + str(start_time)
         cmd = "ffmpeg -i {}.mp4 -ss 00:00:05 -to {} {}.mp4".format(self.video_id, tmp_time, file_name)
         if result != 0:
-            return {'msg' : 'Cut Fail'}
-        file_name = self.video_id+ '_' + str(start_time)
-        
+            return {'msg': 'Cut Fail'}
+        file_name = self.video_id + '_' + str(start_time)
+
         # os.remove("{}.mp4".format(self.video_id))
         return file_name
 
@@ -73,9 +73,3 @@ class Video:
         #    os.remove("{}.mp4".format(self.video_id))
 
         #return {'file_name' : file_name_list}
-
-    def Upload(self, video_name: str):
-        file_path = './{}.mp4'.format(video_name)
-        output_file = video_name + '.mp4'
-        return file_path, output_file
-

@@ -4,10 +4,11 @@
 import pdb
 
 import uvicorn
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.responses import StreamingResponse
 from scraping import Scrap
 from video import Video
+from io import BytesIO
 
 app = FastAPI()
 
@@ -24,13 +25,17 @@ def execScraping(url: str, count: int, time: int):
     return {'success': True, 'result': scrap_info}
 
 @app.post("/yt_download/")
-def execDownload(url: str, time: int, mr_info: int):
-    video = Video(url, time, mr_info)
+def execDownload(url: str, user_want_time: int, start_time: int, end_time: int):
+    video = Video(url, user_want_time, start_time, end_time)
     # download video to server
-    result = video.Download_cut(url, time, mr_info)
+    result = video.getShortByTime(url, user_want_time, start_time, end_time)
     # upload video to user
+    if result['msg'] is not None:
+        return {'success': False, 'msg': result['msg']}
 
-    return result
+    with open(f"./"+result+".mp4", "rb") as video_file:
+        video_contents = video_file.read()
+        return StreamingResponse(BytesIO(video_contents), media_type="video/mp4")
 
 
 if __name__ == "__main__" :
