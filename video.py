@@ -19,57 +19,28 @@ class Video:
 
     def getShortByTime(self, url: str, user_want_time: int, start_time: int, end_time: int):
         user_want_time = user_want_time * 1000
-        file_name_list = []
-        if not os.path.isfile(self.video_id):
-            # os.remove(self.video_id+'.mp4')
+        if os.path.isfile(self.video_id):
+            os.remove(self.video_id+'.mp4')
+        else:
             cmd = "ffmpeg -ss {} -i $(yt-dlp -f best -g '{}') -t {} -c copy {}.mp4"
-
+            total_time = self.convert_ms_to_hms(int(end_time) - int(start_time))
             start_time = self.convert_ms_to_hms(int(start_time) - 5000)
             end_time = self.convert_ms_to_hms(int(end_time) + 5000)
-
+            
             cmd = cmd.format(start_time, url, total_time, self.video_id)
 
             result = os.system(cmd)
             if result != 0:
                 return {'msg': 'Download Fail'}
 
-        tmp_time = self.convert_ms_to_hms(user_want_time + 5000)
         file_name = self.video_id + '_' + str(start_time)
-        cmd = "ffmpeg -i {}.mp4 -ss 00:00:05 -to {} {}.mp4".format(self.video_id, tmp_time, file_name)
+        cmd = "ffmpeg -i {}.mp4 -ss 00:00:05 -to {} {}.mp4".format(self.video_id, total_time, file_name)
+        result = os.system(cmd)
         if result != 0:
             return {'msg': 'Cut Fail'}
+        
         file_name = self.video_id + '_' + str(start_time)
+        
+        os.remove("{}.mp4".format(self.video_id))
+        return {'msg': None, 'file_name': file_name}
 
-        # os.remove("{}.mp4".format(self.video_id))
-        return file_name
-
-        # FIXME not list -> only one
-        #for idx, moment in enumerate(moments):
-        #    if os.path.isfile(self.video_id):
-        #        os.remove(self.video_id+'.mp4')
-        #    cmd = "ffmpeg -ss {} -i $(yt-dlp -f best -g '{}') -t {} -c copy {}.mp4"
-        #    start_time = int(moment) - (int(user_want_time)/2 + 5000)
-        #    if start_time < 0:
-        #        start_time = 0
-        #    total_time = int(moment) + (int(user_want_time)/2 + 5000)
-        #    start_time = self.convert_ms_to_hms(start_time)
-        #    total_time = self.convert_ms_to_hms(total_time)
-        #    
-        #    cmd = cmd.format(start_time, url, total_time, self.video_id)
-        #    
-        #    result = os.system(cmd)
-        #    if result != 0:
-        #        return {'msg' : 'Download Fail'}
-        #    
-        #    tmp_time = self.convert_ms_to_hms(user_want_time + 5000)
-
-        #    cmd = "ffmpeg -i {}.mp4 -ss 00:00:05 -to {} {}.mp4".format(self.video_id, tmp_time, self.video_id+'_'+str(idx))
-        #    
-        #    result = os.system(cmd)
-        #    if result != 0:
-        #        return {'msg' : 'Cut Fail'}
-        #    file_name_list.append(self.video_id+ '_' + str(idx))
-   # 
-        #    os.remove("{}.mp4".format(self.video_id))
-
-        #return {'file_name' : file_name_list}
