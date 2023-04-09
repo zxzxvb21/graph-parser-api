@@ -23,7 +23,7 @@ class Video:
             os.remove(self.video_id+'.mp4')
         else:
             cmd = "ffmpeg -ss {} -i $(yt-dlp -f best -g '{}') -t {} -c copy {}.mp4"
-            total_time = self.convert_ms_to_hms(int(end_time) - int(start_time)+5000)
+            total_time = self.convert_ms_to_hms(int(end_time) - int(start_time) + 5000)
             start_time = self.convert_ms_to_hms(int(start_time) - 5000)
             end_time = self.convert_ms_to_hms(int(end_time) + 5000)
             
