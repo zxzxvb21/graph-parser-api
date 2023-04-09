@@ -23,7 +23,7 @@ class Video:
             os.remove(self.video_id+'.mp4')
         else:
             cmd = "ffmpeg -ss {} -i $(yt-dlp -f best -g '{}') -t {} -c copy {}.mp4"
-            total_time = self.convert_ms_to_hms(int(end_time) - int(start_time))
+            total_time = self.convert_ms_to_hms(int(end_time) - int(start_time)+5000)
             start_time = self.convert_ms_to_hms(int(start_time) - 5000)
             end_time = self.convert_ms_to_hms(int(end_time) + 5000)
             
@@ -34,7 +34,7 @@ class Video:
                 return {'msg': 'Download Fail'}
 
         file_name = self.video_id + '_' + str(start_time)
-        cmd = "ffmpeg -i {}.mp4 -ss 00:00:05 -to {} {}.mp4".format(self.video_id, total_time, file_name)
+        cmd = "ffmpeg -y -i {}.mp4 -ss 00:00:05 -to {} {}.mp4".format(self.video_id, total_time, file_name)
         result = os.system(cmd)
         if result != 0:
             return {'msg': 'Cut Fail'}

@@ -5,7 +5,7 @@ import requests
 import json
 import re
 from bs4 import BeautifulSoup
-from exception import UnicornException
+#from exception import UnicornException
 
 
 class Scrap:
@@ -17,13 +17,14 @@ class Scrap:
         try:
             soup = BeautifulSoup(requests.get(url).text, "html.parser")
             data = re.search(r"var ytInitialData = ({.*?});", soup.prettify()).group(1)
-        except (KeyError, TypeError):  # MostReplayed 정보가 없음
-            error_msg = traceback.format_exc()
-            raise UnicornException(error_msg)
-        except AttributeError:  # 요청한 URL이 올바르지 않음
-            error_msg = traceback.format_exc()
-            raise UnicornException(error_msg)
-
+#        except (KeyError, TypeError):  # MostReplayed 정보가 없음
+#            error_msg = traceback.format_exc()
+#            raise UnicornException(error_msg)
+#        except AttributeError:  # 요청한 URL이 올바르지 않음
+#            error_msg = traceback.format_exc()
+#            raise UnicornException(error_msg)
+        except:
+            pass
         self.mr_info, self.replayed_ratio, self.video_length = self.get_yt_mr(data, count)
         self.title = self.get_yt_title(data)
         self.owner = self.get_yt_owner(data)
