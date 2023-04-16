@@ -17,12 +17,6 @@ class Scrap:
         try:
             soup = BeautifulSoup(requests.get(url).text, "html.parser")
             data = re.search(r"var ytInitialData = ({.*?});", soup.prettify()).group(1)
-#        except (KeyError, TypeError):  # MostReplayed 정보가 없음
-#            error_msg = traceback.format_exc()
-#            raise UnicornException(error_msg)
-#        except AttributeError:  # 요청한 URL이 올바르지 않음
-#            error_msg = traceback.format_exc()
-#            raise UnicornException(error_msg)
         except:
             pass
         self.mr_info, self.replayed_ratio, self.video_length = self.get_yt_mr(data, count)
@@ -87,18 +81,18 @@ class Scrap:
     def reform_mr_info(self, mr_info, time, ratio):
         mr_list = []
         time = time * 1000
-        for mr, rat in zip(mr_info, ratio):
+        for i, (mr, rat) in enumerate(zip(mr_info, ratio)):
             start_time = int(mr) - int(time)/2
             end_time = int(mr) + int(time)/2
             if start_time < 0:
                 start_time = 0
                 end_time = time
-                mr_list.append({'start_time' : start_time, 'end_time' : end_time, 'ratio' : rat})
+                mr_list.append({'index': i, 'start_time' : start_time, 'end_time' : end_time, 'ratio' : rat})
             elif end_time > self.video_length:
                 end_time = self.video_length
-                mr_list.append({'start_time' : start_time, 'end_time' : end_time, 'ratio' : rat})
+                mr_list.append({'index': i, 'start_time' : start_time, 'end_time' : end_time, 'ratio' : rat})
             else:
-                mr_list.append({'start_time' : start_time, 'end_time' : end_time, 'ratio' : rat})
+                mr_list.append({'index': i, 'start_time' : start_time, 'end_time' : end_time, 'ratio' : rat})
         return mr_list
 
     def get_video_id(self, data):

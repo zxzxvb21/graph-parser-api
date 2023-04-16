@@ -33,7 +33,7 @@ def execDownload(url: str, user_want_time: int, start_time: int, end_time: int):
     if result['msg'] is not None:
         return {'success': False, 'msg': result['msg']}
     
-    with open(f"./"+result['file_name']+".mp4", "rb") as video_file:
+    with open(f"./new_"+result['file_name']+".mp4", "rb") as video_file:
         video_contents = video_file.read()
         return StreamingResponse(BytesIO(video_contents), media_type="video/mp4")
 

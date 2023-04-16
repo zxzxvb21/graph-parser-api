@@ -16,6 +16,14 @@ class Video:
         minutes = int((ms / (1000 * 60)) % 60)
         hours = int((ms / (1000 * 60 * 60)) % 24)
         return "{:02d}:{:02d}:{:02d}".format(hours, minutes, seconds)
+    
+    def insert_pad(self, video_name):
+        #cmd = 'ffmpeg -y -i {}.mp4 -vf setdar=9/16 {}.mp4'.format(video_name, 'new_' + video_name)
+        #cmd = 'ffmpeg -y -i {}.mp4 -vf scale=ih*16/9:ih,scale=iw:-2,setsar=1 {}.mp4'.format(video_name, 'new_' + video_name)
+        cmd = 'ffmpeg -y -i {}.mp4 -vf crop=500:ih:400:iw {}.mp4'.format(video_name, 'new_' + video_name)
+        result = os.system(cmd)
+        if result != 0:
+            return {'msg': 'Padding Fail'}
 
     def getShortByTime(self, url: str, user_want_time: int, start_time: int, end_time: int):
         user_want_time = user_want_time * 1000
@@ -38,9 +46,9 @@ class Video:
         result = os.system(cmd)
         if result != 0:
             return {'msg': 'Cut Fail'}
-        
-        file_name = self.video_id + '_' + str(start_time)
-        
+
+        self.insert_pad(file_name)
+        os.remove('{}.mp4'.format(file_name))
         os.remove("{}.mp4".format(self.video_id))
         return {'msg': None, 'file_name': file_name}
 
